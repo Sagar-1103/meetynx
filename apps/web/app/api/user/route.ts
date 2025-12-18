@@ -1,12 +1,8 @@
-import prisma from "@repo/db/client";
-import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
-  const users = await prisma.user.findMany();
-
-  return NextResponse.json({
-    success: true,
-    users,
-    message: "Users fetched successfully",
-  });
+export async function GET(req: NextRequest) {
+  const cookieStore = await cookies();
+  const tokenFromCookie = cookieStore.get("jwtToken") ?? null;
+  return NextResponse.json({ token: tokenFromCookie });
 }
