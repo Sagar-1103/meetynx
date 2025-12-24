@@ -7,6 +7,9 @@ import {
 import { JWT } from "next-auth/jwt";
 import GoogleProvider from "next-auth/providers/google";
 import { cookies } from "next/headers";
+import prisma from "@repo/db/client";
+import { importJWK, JWTPayload, SignJWT } from "jose";
+import { randomUUID } from "crypto";
 
 declare module "next-auth" {
   interface Session {
@@ -30,6 +33,19 @@ declare module "next-auth/jwt" {
   }
 }
 
+const generateJWT = async (payload: JWTPayload) => {
+  const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
+  const jwt = await new SignJWT({
+    ...payload,
+    iat: Math.floor(Date.now() / 1000),
+    jti: randomUUID(),
+  })
+    .setProtectedHeader({ alg: "HS256" })
+    .setExpirationTime("365d")
+    .sign(secret);
+  return jwt;
+};
+
 export const authOptions = {
   providers: [
     GoogleProvider({
@@ -48,13 +64,23 @@ export const authOptions = {
     async signIn({ user }) {
       try {
         if (!user.email) return false;
-        // const jwt = await generateJWT(payload);
-        const jwt = "234";
-
+        const createdUser = await prisma.user.upsert({
+          where: {
+            email: user.email,
+          },
+          update: {},
+          create: {
+            email: user.email,
+            name: user.name ?? user.email.split("@")[0],
+            image: user.image,
+          },
+        });
+        const payload = { id: createdUser.id };
+        const jwt = await generateJWT(payload);
         const cookieStore = await cookies();
-
         cookieStore.set("jwtToken", jwt, {
           httpOnly: true,
+          maxAge: 60 * 60 * 24 * 7,
           secure: true,
           sameSite: "lax",
           path: "/",

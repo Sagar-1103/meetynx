@@ -16,10 +16,7 @@ import {
 } from "next-auth/react";
 
 export default function Page() {
-  const [providers, setProviders] = useState<Record<
-    LiteralUnion<BuiltInProviderType, string>,
-    ClientSafeProvider
-  > | null>(null);
+  const [providers, setProviders] = useState<Record<LiteralUnion<BuiltInProviderType, string>,ClientSafeProvider> | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -39,7 +36,7 @@ export default function Page() {
       default:
         return GoogleLogo;
     }
-  }
+  };
 
   return (
     <div className="w-full max-w-md px-6">
@@ -62,12 +59,18 @@ export default function Page() {
             <Button
               key={provider.id}
               variant="secondary"
-              onClick={()=>signIn(provider.id)}
+              onClick={() => signIn(provider.id)}
               className="py-6 cursor-pointer px-4 rounded-md border border-gray-300/70 hover:border-gray-400/70 flex items-center justify-between transition-all hover:scale-[1.01]"
             >
               <div className="flex items-center gap-3">
-                <Image src={getIconImage(provider.id)} alt={provider.name} className="size-5" />
-                <span className="text-sm font-medium">Continue with {provider.name}</span>
+                <Image
+                  src={getIconImage(provider.id)}
+                  alt={provider.name}
+                  className="size-5"
+                />
+                <span className="text-sm font-medium">
+                  Continue with {provider.name}
+                </span>
               </div>
               <ArrowRight className="size-4 text-gray-500" />
             </Button>

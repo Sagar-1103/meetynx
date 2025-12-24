@@ -7,7 +7,6 @@ import Link from "next/link";
 import {
   Home,
   Layers2,
-  MoreHorizontal,
   Settings,
   Star,
   Upload,
@@ -15,7 +14,7 @@ import {
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { User } from "next-auth";
-import { getSession } from "next-auth/react";
+import { getSession, signOut } from "next-auth/react";
 import { Separator } from "./ui/separator";
 
 export default function AppSidebar() {
@@ -26,6 +25,15 @@ export default function AppSidebar() {
   useEffect(() => {
     getUser();
   }, []);
+
+  const handleLogout = async() => {
+    try {
+      await fetch("/api/auth/logout");
+      signOut({ callbackUrl:"/login" });
+    } catch (error) {
+      console.log("Error signing out.",error);
+    }
+  }
 
   async function getUser() {
     try {
@@ -69,11 +77,6 @@ export default function AppSidebar() {
       href: "/settings",
       icon: <Settings className={`h-5 w-5 shrink-0 `} />,
     },
-    {
-      label: "More",
-      href: "#",
-      icon: <MoreHorizontal className={`h-5 w-5 shrink-0 `} />,
-    },
   ];
 
   return (
@@ -83,14 +86,14 @@ export default function AppSidebar() {
           <div className="flex flex-1 flex-col overflow-x-hidden gap-y-3 overflow-y-auto">
             <Link
               href="/home"
-              className="relative z-20 flex gap-1 items-center space-x-2 text-sm font-normal text-black"
+              className="relative z-20 flex gap-1 items-center space-x-2 text-sm font-normal text-black px-3.5"
             >
               <Image
                 src={MeetynxLogo}
                 alt="Meetynx Logo"
-                className="w-10 scale-150"
+                className="size-7 scale-200"
               />
-              <h1 className="text-2xl font-semibold">Meetynx</h1>
+              <h1 className="text-xl font-semibold">Meetynx</h1>
             </Link>
 
             <Separator className="bg-gray-300/90" />
@@ -108,9 +111,10 @@ export default function AppSidebar() {
           <div>
             {user && user?.image && (
               <SidebarLink
+                className="w-full cursor-pointer"
                 link={{
                   label: `${user.name}`,
-                  href: "#",
+                  onClick: handleLogout,
                   icon: (
                     <Image
                       src={user.image}
