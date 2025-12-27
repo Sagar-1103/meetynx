@@ -14,3 +14,9 @@ model User {
   image String?
 }
 
+model Meeting {
+  id        String @id
+  title     String
+  link      String
+  language  String
+}

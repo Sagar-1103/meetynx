@@ -4,15 +4,11 @@ import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ArrowDown, Calendar, UploadIcon, Video } from "lucide-react";
 import { ReactNode } from "react";
-import { CaptureDialog } from "./ui/capture-dialog";
+import { CaptureDialog } from "./capture-dialog";
 
 export interface CaptureItem {
   id: number;
